@@ -1,0 +1,6 @@
+# CodeBlocks files
+bin
+obj
+UDPServer.cbp
+UDPServer.depend
+UDPServer.layout
