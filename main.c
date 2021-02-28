@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(serverPort);
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
 	if ((bind(serverSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr))) == SOCKET_ERROR) {
 		printf("bind() failed. Error: %1d.\n", WSAGetLastError());
 		closesocket(serverSocket);
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	// When done listening, close both sockets.
+	// When finished, clean up.
 	if (closesocket(serverSocket) == SOCKET_ERROR)
 		printf("closesocket() failed. Error: %1d\n.", WSAGetLastError());
 	else {

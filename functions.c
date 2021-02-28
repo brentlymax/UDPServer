@@ -68,6 +68,7 @@ int sendACK(uint8_t recvClientID, uint8_t recvSegNum, int socket, SOCKADDR_IN cl
 	ackPacket* ackPacket = initACKPacket(recvClientID, recvSegNum);
 	dataBuffer *dBuffer = initACKBuffer();
 	serializeACK(*ackPacket, dBuffer);
+
 	if (sendto(socket, dBuffer->data, dBuffer->size, 0, (SOCKADDR*)&clientAddr, clientAddrLen) < 0) {
 		printf("Failed to send ACK to client. Error: %1d.\n", WSAGetLastError());
 		closesocket(socket);
@@ -75,6 +76,7 @@ int sendACK(uint8_t recvClientID, uint8_t recvSegNum, int socket, SOCKADDR_IN cl
 		return -1;
 	} else
 		printf("ACK sent to client.\n");
+
 	free(ackPacket);
 	free(dBuffer);
 	return 1;
@@ -89,6 +91,7 @@ int sendReject(uint8_t recvClientID, uint8_t recvSegNum, uint16_t subCode, int s
 	rejectPacket* rejPacket = initRejectPacket(recvClientID, recvSegNum, subCode);
 	dataBuffer *dBuffer = initRejectBuffer();
 	serializeReject(*rejPacket, dBuffer);
+
 	if (sendto(socket, dBuffer->data, dBuffer->size, 0, (SOCKADDR*)&clientAddr, clientAddrLen) < 0) {
 		printf("Failed to send Reject code to client. Error: %1d.\n", WSAGetLastError());
 		closesocket(socket);
@@ -96,6 +99,7 @@ int sendReject(uint8_t recvClientID, uint8_t recvSegNum, uint16_t subCode, int s
 		return -1;
 	} else
 		printf("Reject code sent to client.\n");
+
 	free(rejPacket);
 	free(dBuffer);
 	return 1;
