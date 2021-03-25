@@ -74,9 +74,10 @@ int sendACK(uint8_t recvClientID, uint8_t recvSegNum, int socket, SOCKADDR_IN cl
 		closesocket(socket);
 		WSACleanup();
 		return -1;
-	} else
+	}
+	else {
 		printf("ACK sent to client.\n");
-
+	}
 	free(ackPacket);
 	free(dBuffer);
 	return 1;
@@ -97,9 +98,10 @@ int sendReject(uint8_t recvClientID, uint8_t recvSegNum, uint16_t subCode, int s
 		closesocket(socket);
 		WSACleanup();
 		return -1;
-	} else
+	}
+	else {
 		printf("Reject code sent to client.\n");
-
+	}
 	free(rejPacket);
 	free(dBuffer);
 	return 1;

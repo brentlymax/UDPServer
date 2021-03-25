@@ -34,16 +34,20 @@ int main(int argc, char *argv[])
 	if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
 		printf("WSAStartup failed. Error: %1d.\n", WSAGetLastError());
 		return -1;
-	} else
+	}
+	else {
 		printf("WSAStartup succeeded. Status: %s.\n", wsaData.szSystemStatus);
+	}
 
 	// Open socket.
 	if ((serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR) {
 		printf("socket() failed. Error: %1d.\n", WSAGetLastError());
 		WSACleanup();
 		return -1;
-	} else
+	}
+	else {
 		printf("socket() succeeded.\n");
+	}
 
 	// Set up server address structure, then bind the server's address to the socket.
 	memset((char*)&serverAddr, 0, sizeof(serverAddr));
@@ -56,8 +60,10 @@ int main(int argc, char *argv[])
 		closesocket(serverSocket);
 		WSACleanup();
 		return -1;
-	} else
+	}
+	else {
 		printf("bind() succeeded.\n");
+	}
 
 	// Loop and receive/send data from/to clients.
 	printf("Server running. Press CTRL + C to quit.\n\n");
@@ -71,7 +77,8 @@ int main(int argc, char *argv[])
 			closesocket(serverSocket);
 			WSACleanup();
 			return -1;
-		} else {
+		}
+		else {
 			checkPayloadLen = recvPacket->payloadLen;
 			// Case 1: Out of sequence
 			if (checkSegNum < recvPacket->segNum) {
@@ -82,8 +89,9 @@ int main(int argc, char *argv[])
 					checkSegNum++;
 				}
 				continue;
+			}
 			// Case 2: Length Mismatch
-			} else if ((recvPacket->payload[checkPayloadLen - 1] == '\0' ||
+			else if ((recvPacket->payload[checkPayloadLen - 1] == '\0' ||
 					recvPacket->payload[checkPayloadLen] != '\0') &&
 					checkPayloadLen != MAX_PAYLOAD_LEN) {
 				printf("Payload length mismatch. Error: %1x.\n", REJECT_SUB2);
@@ -92,8 +100,9 @@ int main(int argc, char *argv[])
 					checkSegNum++;
 				}
 				continue;
+			}
 			// Case 3: End of packet missing
-			} else if (recvPacket->endID != PACKET_END_ID) {
+			else if (recvPacket->endID != PACKET_END_ID) {
 				printf("End of packet missing. Error: %1x.\n", REJECT_SUB3);
 				if (sendReject(recvPacket->clientID, recvPacket->segNum, REJECT_SUB3, serverSocket, clientAddr, clientAddrLen) == 1) {
 					printf("Expected EndID: %x\n", PACKET_END_ID);
@@ -101,8 +110,9 @@ int main(int argc, char *argv[])
 					checkSegNum++;
 				}
 				continue;
+			}
 			// Case 4: Duplicate packet
-			} else if (recvPacket->segNum < checkSegNum) {
+			else if (recvPacket->segNum < checkSegNum) {
 				printf("Duplicate packet. Error: %1x.\n", REJECT_SUB4);
 				if (sendReject(recvPacket->clientID, recvPacket->segNum, REJECT_SUB4, serverSocket, clientAddr, clientAddrLen) == 1) {
 					printf("Expected segment number: %d\n", checkSegNum);
@@ -110,8 +120,9 @@ int main(int argc, char *argv[])
 					checkSegNum++;
 				}
 				continue;
+			}
 			// Base Case: Correct packet
-			} else {
+			else {
 				printf("Data received successfully from client:\n");
 				printf("Packet contents:\n");
 				printf("Start ID: %x\n", recvPacket->startID);
@@ -120,24 +131,31 @@ int main(int argc, char *argv[])
 				printf("Segment Number: %d\n", recvPacket->segNum);
 				printf("Payload Length: %d\n", recvPacket->payloadLen);
 				printf("Payload Contents: \n");
-				for (int i = 0; i < recvPacket->payloadLen; i++)
+
+				for (int i = 0; i < recvPacket->payloadLen; i++) {
 					printf("%c", recvPacket->payload[i]);
+				}
 				printf("\n");
 				printf("End ID: %x\n\n",recvPacket->endID);
-				if (sendACK(recvPacket->clientID, recvPacket->segNum, serverSocket, clientAddr, clientAddrLen) == 1)
+
+				if (sendACK(recvPacket->clientID, recvPacket->segNum, serverSocket, clientAddr, clientAddrLen) == 1) {
 					checkSegNum++;
+				}
 			}
 		}
 	}
 	// When finished, clean up.
-	if (closesocket(serverSocket) == SOCKET_ERROR)
+	if (closesocket(serverSocket) == SOCKET_ERROR) {
 		printf("closesocket() failed. Error: %1d\n.", WSAGetLastError());
+	}
 	else {
 		printf("closesocket() succeeded.\n");
-		if (WSACleanup() == SOCKET_ERROR)
+		if (WSACleanup() == SOCKET_ERROR) {
 			printf("WSACleanup() failed. Error: %1d\n.", WSAGetLastError());
-		else
+		}
+		else {
 			printf("WSACleanup() succeeded.\n");
+		}
 		return 0;
 	}
 }
